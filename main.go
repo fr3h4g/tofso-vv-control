@@ -76,6 +76,7 @@ func main() {
 			humid, temp, err := dht.GetHumidTemp(17)
 			if err != nil {
 				fmt.Printf("%s\n", err)
+				continue
 			}
 			log.Printf("humidity %.1f%%, temperature: %.1f°C\n", humid, temp)
 			saveToDB(temp, humid)

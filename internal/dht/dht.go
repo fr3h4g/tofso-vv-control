@@ -48,6 +48,10 @@ func GetHumidTemp(pin int) (float32, float32, error) {
 
 	var nums []int
 
+	if len(bytes) != 40 {
+		return float32(0), float32(0), fmt.Errorf("error received from sensor")
+	}
+
 	for _, char := range bytes {
 		binaryStr = binaryStr + string(char)
 		pos++
