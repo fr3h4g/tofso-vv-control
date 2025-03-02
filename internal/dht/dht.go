@@ -10,11 +10,12 @@ import (
 
 var lastTimestamp time.Duration
 var bytes = ""
+var first = true
 
 func eh(evt gpiocdev.LineEvent) {
 	wt := evt.Timestamp.Microseconds() - lastTimestamp.Microseconds()
 	if evt.Type == 2 && wt < 80 {
-		if wt > 40 {
+		if wt > 40 && wt < 80 {
 			bytes += "1"
 		} else {
 			bytes += "0"
@@ -23,10 +24,11 @@ func eh(evt gpiocdev.LineEvent) {
 	lastTimestamp = evt.Timestamp
 }
 
-func GetHumidTemp(pin int) (float32, float32, error) {
+func GetHumidTemp(c *gpiocdev.Chip) (float32, float32, error) {
+	first = true
 	bytes = ""
-	chip := "gpiochip0"
-	l, err := gpiocdev.RequestLine(chip, pin, gpiocdev.WithPullUp,
+	// chip := "gpiochip0"
+	l, err := c.RequestLine(17, gpiocdev.WithPullUp,
 		gpiocdev.WithBothEdges,
 		gpiocdev.WithEventHandler(eh))
 	if err != nil {
@@ -48,9 +50,15 @@ func GetHumidTemp(pin int) (float32, float32, error) {
 
 	var nums []int
 
+	if len(bytes) == 41 {
+		bytes = bytes[1:]
+	}
+
 	if len(bytes) != 40 {
 		return float32(0), float32(0), fmt.Errorf("error received from sensor")
 	}
+
+	//fmt.Println(bytes)
 
 	for _, char := range bytes {
 		binaryStr = binaryStr + string(char)

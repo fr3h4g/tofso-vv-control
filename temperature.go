@@ -8,7 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func saveToDB(temp float32, humid float32) {
+func saveTempHumidToDB(temp float32, humid float32) {
 	db, err := sql.Open("mysql", os.Getenv("MYSQL_DSN"))
 	if err != nil {
 		fmt.Println(err)

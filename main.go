@@ -11,6 +11,7 @@ import (
 	"github.com/fr3h4g/tofso-vv-control/internal/dht"
 	"github.com/joho/godotenv"
 	"github.com/pressly/goose/v3"
+	"github.com/warthog618/go-gpiocdev"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -71,17 +72,34 @@ func main() {
 		panic(err)
 	}
 
+	c, _ := gpiocdev.NewChip("gpiochip0", gpiocdev.WithConsumer("myapp"))
+	defer c.Close()
+
 	go func() {
 		for {
-			humid, temp, err := dht.GetHumidTemp(17)
+			humid, temp, err := dht.GetHumidTemp(c)
 			if err != nil {
 				fmt.Printf("%s\n", err)
 				continue
 			}
 			log.Printf("humidity %.1f%%, temperature: %.1f°C\n", humid, temp)
-			saveToDB(temp, humid)
+			go saveTempHumidToDB(temp, humid)
 			time.Sleep(time.Duration(60) * time.Second)
 		}
+	}()
+
+	go func() {
+		for {
+			err := GetTankLevel(c)
+			if err != nil {
+				fmt.Printf("%s\n", err)
+			}
+			time.Sleep(time.Duration(60) * time.Second)
+		}
+	}()
+
+	go func() {
+		CountPluses(c)
 	}()
 
 	log.Println("startup complete, running...")
