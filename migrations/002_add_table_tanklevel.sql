@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE `vvcontrol`.`tanklevel` (
+CREATE TABLE `tanklevel` (
   `id` INT NOT NULL AUTO_INCREMENT , 
   `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
   `sensor1` INT(1) NULL , 

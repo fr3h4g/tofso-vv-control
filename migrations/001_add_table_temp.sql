@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE `vvcontrol`.`temperature` (
+CREATE TABLE `temperature` (
   `id` INT NOT NULL AUTO_INCREMENT , 
   `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
   `temperature` DECIMAL(10,2) NOT NULL , 
